@@ -96,11 +96,7 @@ public class OrcWriter {
 
             final String outputFilePath = outputFolderPath + "orc-test-data-" + fileNumber + ".orc";
             Configuration conf = new Configuration();
-            TypeDescription schema = TypeDescription.createStruct()
-                    .addField("org_id", TypeDescription.createString())
-                    .addField("user_id", TypeDescription.createString())
-                    .addField("user_name", TypeDescription.createString())
-                    .addField("id", TypeDescription.createString());
+            TypeDescription schema = AuditSchema.getSchema();
 
             Writer writer = OrcFile.createWriter(new Path(outputFilePath),
                     OrcFile.writerOptions(conf)
@@ -113,7 +109,6 @@ public class OrcWriter {
             BytesColumnVector IDVector = (BytesColumnVector) batch.cols[3];
 
 
-//            for (int r = 0; r < ids.length; ++r) {
             int r = fileNumber;
             int row = batch.size++;
             orgIDVector.setVal(row, organizationIds[r].getBytes());
@@ -125,7 +120,6 @@ public class OrcWriter {
             if (batch.size == batch.getMaxSize()) {
                 writer.addRowBatch(batch);
                 batch.reset();
-//                }
             }
             if (batch.size != 0) {
                 writer.addRowBatch(batch);

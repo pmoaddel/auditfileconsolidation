@@ -28,7 +28,7 @@ public class OrcReader {
                 String userName = new String(userNameVector.vector[r], userNameVector.start[r], userNameVector.length[r]);
                 String id = new String(IDVector.vector[r], IDVector.start[r], IDVector.length[r]);
 
-                System.out.println(orgID + ", " + userID + ", " + userName + ", " + id);
+                System.out.println(orgID + " " + userID + " " + userName + " " + id);
 
             }
         }

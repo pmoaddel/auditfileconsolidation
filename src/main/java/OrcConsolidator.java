@@ -1,7 +1,5 @@
-import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hive.ql.exec.vector.BytesColumnVector;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatch;
 import org.apache.orc.*;
 
@@ -16,6 +14,7 @@ public class OrcConsolidator {
         File directory = new File(folderPath);
         File[] orcFiles = directory.listFiles(new FileFilter() {
             public boolean accept(File pathname) {
+                //get only orc files but ignore hidden files
                 return pathname.getName().charAt(0) != '.' && pathname.getName().contains(".orc");
             }
         });
@@ -23,11 +22,7 @@ public class OrcConsolidator {
         //Setup Writer
         final String consolidatedFilePath = folderPath + "consolidated-file.orc";
         Configuration conf = new Configuration();
-        TypeDescription schema = TypeDescription.createStruct()
-                .addField("org_id", TypeDescription.createString())
-                .addField("user_id", TypeDescription.createString())
-                .addField("user_name", TypeDescription.createString())
-                .addField("id", TypeDescription.createString());
+        TypeDescription schema = AuditSchema.getSchema();
 
         Writer writer = OrcFile.createWriter(new Path(consolidatedFilePath),
                 OrcFile.writerOptions(conf)
@@ -45,8 +40,6 @@ public class OrcConsolidator {
             }
             rows.close();
         }
-        System.out.println("File consolidated");
-        System.out.println("Number rows: " + writer.getNumberOfRows());
         writer.close();
         return consolidatedFilePath;
     }
